@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Catálogo | Tienda Gemer{% endblock %}
+{% block content %}
+<section class="page-hero page-width"><span class="eyebrow">Catálogo Tienda Gemer</span><h1>Elige tu equipamiento</h1><p>Filtra por categoría, ordena por precio y encuentra el producto ideal para tu setup.</p></section>
+<section class="catalog-layout page-width section-tight">
+  <aside class="filter-panel">
+    <h2>Filtros</h2>
+    <form method="get" action="{{ url_for('explore') }}">
+      <label>Buscar<input type="search" name="q" value="{{ query }}" placeholder="Nombre o categoría"></label>
+      <label>Categoría<select name="category"><option value="">Todas</option>{% for row in categories %}<option value="{{ row['category'] }}" {% if selected_category == row['category'] %}selected{% endif %}>{{ row['category'] }}</option>{% endfor %}</select></label>
+      <label>Ordenar<select name="sort"><option value="featured" {% if selected_sort == 'featured' %}selected{% endif %}>Destacados</option><option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>Menor precio</option><option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>Mayor precio</option><option value="stock" {% if selected_sort == 'stock' %}selected{% endif %}>Mayor stock</option><option value="name" {% if selected_sort == 'name' %}selected{% endif %}>Nombre A–Z</option></select></label>
+      <button class="button button-primary" type="submit">Aplicar filtros</button><a class="button button-ghost" href="{{ url_for('explore') }}">Limpiar</a>
+    </form>
+  </aside>
+  <div class="catalog-results">
+    <div class="results-toolbar"><div><strong>{{ products|length }}</strong> productos encontrados</div><button class="filter-toggle button button-ghost" type="button">Mostrar filtros</button></div>
+    {% if products %}<div class="product-grid compact-grid">{% for product in products %}
+      <article class="product-card"><div class="product-media">{% if product['badge'] %}<span class="product-badge">{{ product['badge'] }}</span>{% endif %}<img src="{{ url_for('static', filename=product['image']) }}" alt="{{ product['name'] }}"><button class="favorite-button" type="button" data-favorite="{{ product['id'] }}">♡</button></div><div class="product-content"><span class="product-category">{{ product['category'] }}</span><h3><a href="{{ url_for('product_detail', slug=product['slug']) }}">{{ product['name'] }}</a></h3><p>{{ product['description'] }}</p><div class="price-row"><div>{% if product['old_price'] %}<del>{{ product['old_price']|money }}</del>{% endif %}<strong>{{ product['price']|money }}</strong></div><small>{{ product['stock'] }} en stock</small></div><div class="product-actions"><a class="button button-ghost" href="{{ url_for('product_detail', slug=product['slug']) }}">Ver</a><form action="{{ url_for('add_to_cart') }}" method="post"><input type="hidden" name="product_id" value="{{ product['id'] }}"><button class="button button-primary" type="submit">Agregar</button></form></div></div></article>
+    {% endfor %}</div>{% else %}<div class="empty-state"><span>⌕</span><h2>No encontramos productos</h2><p>Prueba con otros filtros o vuelve a ver todo el catálogo.</p><a class="button button-primary" href="{{ url_for('explore') }}">Ver todos</a></div>{% endif %}
+  </div>
+</section>
+{% endblock %}

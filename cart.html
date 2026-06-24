@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Carrito | Tienda Gemer{% endblock %}
+{% block content %}
+<section class="page-hero page-width"><span class="eyebrow">Tu selección</span><h1>Carrito de compras</h1><p>Revisa cantidades, colores y totales antes de confirmar tu pedido.</p></section>
+<section class="cart-layout page-width section-tight">
+  <div class="cart-list">
+    {% if items %}
+      {% for item in items %}
+      <article class="cart-card">
+        <img src="{{ url_for('static', filename=item['image']) }}" alt="{{ item['name'] }}">
+        <div class="cart-product-info"><span class="product-category">{{ item['category'] }}</span><h2><a href="{{ url_for('product_detail', slug=item['slug']) }}">{{ item['name'] }}</a></h2><p>Color: <strong>{{ item['color'] }}</strong></p><small>{{ item['stock'] }} unidades en stock</small></div>
+        <form class="cart-update" action="{{ url_for('update_cart') }}" method="post"><input type="hidden" name="product_id" value="{{ item['id'] }}"><input type="hidden" name="color" value="{{ item['color'] }}"><label>Cantidad<input type="number" name="quantity" min="0" max="{{ item['stock'] }}" value="{{ item['quantity'] }}"></label><button class="button button-ghost" type="submit">Actualizar</button></form>
+        <div class="cart-line-total"><small>{{ item['price']|money }} c/u</small><strong>{{ item['subtotal']|money }}</strong><form action="{{ url_for('remove_from_cart') }}" method="post"><input type="hidden" name="product_id" value="{{ item['id'] }}"><input type="hidden" name="color" value="{{ item['color'] }}"><button class="link-danger" type="submit">Eliminar</button></form></div>
+      </article>
+      {% endfor %}
+      <div class="cart-actions-bottom"><a class="button button-ghost" href="{{ url_for('explore') }}">← Seguir comprando</a><form action="{{ url_for('clear_cart') }}" method="post"><button class="button button-ghost danger" type="submit">Vaciar carrito</button></form></div>
+    {% else %}
+      <div class="empty-state"><span>🛒</span><h2>Tu carrito está vacío</h2><p>Explora el catálogo y agrega los productos que más te gusten.</p><a class="button button-primary" href="{{ url_for('explore') }}">Explorar productos</a></div>
+    {% endif %}
+  </div>
+  {% if items %}
+  <aside class="order-summary"><span class="eyebrow">Resumen</span><h2>Tu pedido</h2><div class="summary-row"><span>Productos</span><strong>{{ cart_count }}</strong></div><div class="summary-row"><span>Subtotal</span><strong>{{ total|money }}</strong></div><div class="summary-row"><span>Envío</span><strong class="success-text">Gratis</strong></div><div class="summary-total"><span>Total</span><strong>{{ total|money }}</strong></div><a class="button button-primary full" href="{{ url_for('checkout') }}">Continuar al pago</a><p class="summary-note">🔒 Tus datos se procesan de forma segura.</p></aside>
+  {% endif %}
+</section>
+{% endblock %}

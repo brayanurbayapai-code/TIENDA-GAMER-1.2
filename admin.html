@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Dashboard administrativo | Tienda Gemer{% endblock %}
+{% block body_class %}admin-body{% endblock %}
+{% block content %}
+<section class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-head"><span class="brand-mark">TG</span><div><strong>Tienda Gemer</strong><small>Panel administrativo</small></div></div>
+    <nav><a class="active" href="#resumen">◈ Resumen</a><a href="#pedidos">▣ Pedidos</a><a href="#inventario">◫ Inventario</a><a href="#clientes">◎ Clientes</a><a href="#mensajes">✉ Mensajes</a></nav>
+    <div class="sidebar-foot"><p><span>{{ current_user['name'][0]|upper }}</span><strong>{{ current_user['name'] }}</strong><small>Administrador</small></p><a href="{{ url_for('index') }}">Ver tienda</a></div>
+  </aside>
+  <div class="admin-main">
+    <header class="admin-topbar"><button class="dash-menu" type="button" aria-label="Abrir menú">☰</button><div><span>Panel de control</span><h1>Resumen del negocio</h1></div><div class="admin-top-actions"><a href="{{ url_for('explore') }}">Abrir catálogo</a><span class="live-dot"></span><b>En línea</b></div></header>
+    <div class="admin-content">
+      <section id="resumen">
+        <div class="admin-heading"><div><span class="eyebrow">Vista general</span><h2>Indicadores principales</h2></div><p>Datos actualizados desde la base de datos del proyecto.</p></div>
+        <div class="metric-grid">
+          <article><span class="metric-icon">S/</span><div><small>Ventas totales</small><strong>{{ metrics['revenue']|money }}</strong><em>Acumulado histórico</em></div></article>
+          <article><span class="metric-icon">#</span><div><small>Pedidos</small><strong>{{ metrics['orders'] }}</strong><em>Registrados</em></div></article>
+          <article><span class="metric-icon">◎</span><div><small>Clientes</small><strong>{{ metrics['users'] }}</strong><em>Cuentas activas</em></div></article>
+          <article><span class="metric-icon">↗</span><div><small>Ticket promedio</small><strong>{{ metrics['ticket']|money }}</strong><em>Por pedido</em></div></article>
+          <article><span class="metric-icon">◷</span><div><small>Ventas de hoy</small><strong>{{ metrics['today']|money }}</strong><em>Jornada actual</em></div></article>
+          <article><span class="metric-icon">▥</span><div><small>Ventas del mes</small><strong>{{ metrics['month']|money }}</strong><em>Mes vigente</em></div></article>
+          <article><span class="metric-icon warn">!</span><div><small>Stock bajo</small><strong>{{ metrics['low_stock'] }}</strong><em>Productos ≤ 8</em></div></article>
+          <article><span class="metric-icon">✉</span><div><small>Mensajes</small><strong>{{ metrics['messages'] }}</strong><em>Contacto recibido</em></div></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="dashboard-card sales-card"><div class="card-heading"><div><small>Últimos 7 días</small><h3>Rendimiento de ventas</h3></div><strong>{{ metrics['month']|money }}</strong></div><div class="bar-chart">{% for point in sales_chart %}<div class="bar-column"><span class="bar-value">{{ point['value']|money }}</span><i style="height: {{ (point['value'] / max_sale * 100) if max_sale else 0 }}%"></i><small>{{ point['label'] }}</small></div>{% endfor %}</div></article>
+          <article class="dashboard-card status-card"><div class="card-heading"><div><small>Distribución</small><h3>Estados de pedidos</h3></div></div><div class="status-list">{% for row in status_counts %}<div><span><i class="status-dot status-dot-{{ row['status']|lower|replace(' ', '-') }}"></i>{{ row['status'] }}</span><strong>{{ row['total'] }}</strong></div>{% endfor %}</div></article>
+        </div>
+
+        <div class="dashboard-grid secondary">
+          <article class="dashboard-card"><div class="card-heading"><div><small>Ranking</small><h3>Productos más vendidos</h3></div></div><div class="ranking-list">{% for product in top_products %}<div><span>{{ loop.index }}</span><div><strong>{{ product['product_name'] }}</strong><small>{{ product['units'] }} unidades</small></div><b>{{ product['total']|money }}</b></div>{% else %}<p class="muted">Aún no hay ventas registradas.</p>{% endfor %}</div></article>
+          <article class="dashboard-card"><div class="card-heading"><div><small>Alertas</small><h3>Resumen operativo</h3></div></div><div class="ops-grid"><div><span>Stock bajo</span><strong>{{ metrics['low_stock'] }}</strong><small>Requieren reposición</small></div><div><span>Mensajes</span><strong>{{ metrics['messages'] }}</strong><small>Pendientes de revisar</small></div><div><span>Pedidos</span><strong>{{ metrics['orders'] }}</strong><small>En el sistema</small></div><div><span>Clientes</span><strong>{{ metrics['users'] }}</strong><small>Registrados</small></div></div></article>
+        </div>
+      </section>
+
+      <section class="admin-section" id="pedidos">
+        <div class="admin-heading"><div><span class="eyebrow">Gestión</span><h2>Pedidos recientes</h2></div><p>Cambia el estado de cada pedido desde la misma tabla.</p></div>
+        <div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Pago</th><th>Estado</th><th>Acción</th></tr></thead><tbody>{% for order in orders %}<tr><td><strong>{{ order['order_number'] }}</strong></td><td><span>{{ order['user_name'] }}</span><small>{{ order['customer_email'] }}</small></td><td>{{ order['created_at'] }}</td><td><strong>{{ order['total']|money }}</strong></td><td>{{ order['payment_method'] }}</td><td><span class="status status-{{ order['status']|lower|replace(' ', '-') }}">{{ order['status'] }}</span></td><td><form class="inline-form" action="{{ url_for('update_order_status', order_id=order['id']) }}" method="post"><select name="status">{% for status in ['Confirmado','Preparando','Enviado','Entregado','Cancelado'] %}<option value="{{ status }}" {% if order['status'] == status %}selected{% endif %}>{{ status }}</option>{% endfor %}</select><button type="submit">Guardar</button></form></td></tr>{% endfor %}</tbody></table></div></div>
+      </section>
+
+      <section class="admin-section" id="inventario">
+        <div class="admin-heading"><div><span class="eyebrow">Control de stock</span><h2>Inventario</h2></div><p>Actualiza existencias y revisa productos con pocas unidades.</p></div>
+        <div class="inventory-grid">{% for product in products %}<article class="inventory-card {% if product['stock'] <= 8 %}low{% endif %}"><img src="{{ url_for('static', filename=product['image']) }}" alt="{{ product['name'] }}"><div><span>{{ product['category'] }}</span><h3>{{ product['name'] }}</h3><p>{{ product['price']|money }}</p></div><form action="{{ url_for('update_product_stock', product_id=product['id']) }}" method="post"><label>Stock<input type="number" name="stock" min="0" value="{{ product['stock'] }}"></label><button type="submit">Actualizar</button></form></article>{% endfor %}</div>
+      </section>
+
+      <section class="admin-section" id="clientes">
+        <div class="admin-heading"><div><span class="eyebrow">Usuarios</span><h2>Clientes recientes</h2></div><p>Últimas cuentas registradas en la plataforma.</p></div>
+        <div class="people-grid">{% for user in users %}<article><span>{{ user['name'][0]|upper }}</span><div><h3>{{ user['name'] }}</h3><p>{{ user['email'] }}</p><small>{{ user['role']|capitalize }} · {{ user['created_at'] }}</small></div></article>{% endfor %}</div>
+      </section>
+
+      <section class="admin-section" id="mensajes">
+        <div class="admin-heading"><div><span class="eyebrow">Contacto</span><h2>Mensajes recibidos</h2></div><p>Consultas enviadas desde la página principal.</p></div>
+        <div class="message-grid">{% for message in messages %}<article><header><div><strong>{{ message['name'] }}</strong><small>{{ message['email'] }}</small></div><span>{{ message['created_at'] }}</span></header><p>{{ message['message'] }}</p></article>{% else %}<div class="empty-state small"><span>✉</span><h2>No hay mensajes</h2><p>Los formularios enviados aparecerán aquí.</p></div>{% endfor %}</div>
+      </section>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block footer %}{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin.js') }}" defer></script>{% endblock %}

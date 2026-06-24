@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión | Tienda Gemer{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-visual"><img src="{{ url_for('static', filename='img/fondo-P.jpeg') }}" alt="Setup gamer"><div class="auth-overlay"><a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">TG</span><span class="brand-copy"><strong>TIENDA GEMER</strong><small>TECNOLOGÍA GAMER</small></span></a><div><span class="eyebrow">Tu cuenta gamer</span><h1>Vuelve a tu setup.</h1><p>Consulta tus compras, descarga comprobantes y sigue el estado de tus pedidos.</p></div></div></div>
+  <div class="auth-panel"><div class="auth-card"><span class="eyebrow">Bienvenido de nuevo</span><h1>Iniciar sesión</h1><p>Ingresa con tu correo y contraseña.</p><form method="post"><label>Correo electrónico<input type="email" name="email" placeholder="nombre@correo.com" required autofocus></label><label>Contraseña<input type="password" name="password" placeholder="Mínimo 8 caracteres" required></label><button class="button button-primary full" type="submit">Ingresar</button></form><div class="demo-credentials"><strong>Accesos de demostración</strong><p>Administrador: <code>admin@tiendagemer.pe</code> / <code>Admin123!</code></p><p>Cliente: <code>cliente@tiendagemer.pe</code> / <code>Cliente123!</code></p></div><p class="auth-switch">¿No tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate aquí</a></p></div></div>
+</section>
+{% endblock %}
+{% block footer %}{% endblock %}

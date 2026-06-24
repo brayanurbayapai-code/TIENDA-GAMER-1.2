@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Mis compras | Tienda Gemer{% endblock %}
+{% block content %}
+<section class="page-hero page-width"><span class="eyebrow">Tu cuenta</span><h1>Historial de compras</h1><p>Consulta el estado, total y comprobante de cada pedido.</p></section>
+<section class="orders-page page-width section-tight">
+  {% if orders %}
+  <div class="orders-list">{% for order in orders %}<article class="order-card"><div class="order-card-head"><div><span>Pedido</span><h2>{{ order['order_number'] }}</h2></div><span class="status status-{{ order['status']|lower|replace(' ', '-') }}">{{ order['status'] }}</span></div><div class="order-meta"><div><span>Fecha</span><strong>{{ order['created_at'] }}</strong></div><div><span>Pago</span><strong>{{ order['payment_method'] }}</strong></div><div><span>Entrega</span><strong>{{ order['district'] }}, {{ order['city'] }}</strong></div><div><span>Total</span><strong>{{ order['total']|money }}</strong></div></div><div class="progress-track"><i class="{% if order['status'] in ['Preparando','Enviado','Entregado'] %}active{% endif %}"></i><i class="{% if order['status'] in ['Enviado','Entregado'] %}active{% endif %}"></i><i class="{% if order['status'] == 'Entregado' %}active{% endif %}"></i></div><div class="order-actions"><a class="button button-ghost" href="{{ url_for('receipt', order_id=order['id']) }}">Ver boleta</a><a class="text-link" href="{{ url_for('explore') }}">Comprar nuevamente →</a></div></article>{% endfor %}</div>
+  {% else %}<div class="empty-state"><span>📦</span><h2>Aún no tienes compras</h2><p>Cuando realices un pedido, aparecerá en esta sección.</p><a class="button button-primary" href="{{ url_for('explore') }}">Ir al catálogo</a></div>{% endif %}
+</section>
+{% endblock %}
