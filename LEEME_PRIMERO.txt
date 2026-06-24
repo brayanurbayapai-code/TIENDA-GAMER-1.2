@@ -1,0 +1,34 @@
+TIENDA GEMER PROFESIONAL - FORMA CORRECTA DE ABRIRLO
+
+NO abras templates/index.html con doble clic.
+Ese archivo contiene código Jinja de Flask y solo funciona cuando el servidor está encendido.
+
+FORMA FÁCIL EN WINDOWS:
+1. Haz doble clic en 1_INICIAR_TIENDA.bat
+2. Espera unos segundos.
+3. La página se abrirá automáticamente en:
+   http://127.0.0.1:5000
+4. No cierres la ventana negra mientras estés usando la tienda.
+
+FORMA DESDE VISUAL STUDIO CODE:
+1. Abre esta carpeta completa en VS Code.
+2. Abre Terminal > Nueva terminal.
+3. Ejecuta:
+   pip install -r requirements.txt
+4. Luego ejecuta:
+   python app.py
+5. Entra a http://127.0.0.1:5000
+
+CUENTAS DE PRUEBA
+Administrador:
+Correo: admin@tiendagemer.pe
+Contraseña: Admin123!
+
+Cliente:
+Correo: cliente@tiendagemer.pe
+Contraseña: Cliente123!
+
+RENDER
+Publica este proyecto como Web Service, no como Static Site.
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn app:app

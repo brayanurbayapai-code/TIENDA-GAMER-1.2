@@ -1,0 +1,29 @@
+TIENDA GEMER - SUBIDA CORRECTA A GITHUB Y RENDER
+
+En GitHub, estos elementos deben verse directamente en la página principal:
+- app.py
+- requirements.txt
+- Procfile
+- render.yaml
+- templates/
+- static/
+- tienda_gemer.db
+
+Dentro de templates debe existir:
+- error.html
+- base.html
+- index.html
+- admin.html
+- login.html
+- register.html
+- cart.html
+- checkout.html
+
+RENDER:
+Tipo: Web Service
+Branch: la misma rama de GitHub (main o principal)
+Root Directory: dejar vacío
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
+
+No usar GitHub Pages ni Static Site.
